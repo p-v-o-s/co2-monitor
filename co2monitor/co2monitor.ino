@@ -75,7 +75,7 @@ int ledState = LOW;
 
 long lastMeasureTime = 0;  // the last time the output pin was toggled
 
-const long measureDelay = 10000;
+const long measureDelay = 300000;
 
 //char post_url [200];
 
@@ -149,6 +149,7 @@ int getStrength(uint8_t points) {
 
 String loadParams(AutoConnectAux& aux, PageArgument& args) {
   (void)(args);
+  Serial.println("loading...");
   File param = SPIFFS.open(PARAM_FILE, "r");
   if (param) {
     aux.loadElement(param);
@@ -397,12 +398,25 @@ void loop() {
 
   if ( (millis() - lastMeasureTime) > measureDelay) {
 
+/*
+AutoConnectAux* setting = portal.aux(AUX_MQTTSETTING);
+PageArgument  args;
+    AutoConnectAux& mqtt_setting = *setting;
+    loadParams(mqtt_setting, args);
+
+ serverName = args.arg("mqttserver");
+  serverName.trim();
+  */
+  Serial.println();
+Serial.println(serverName);
+
+
 if(WiFi.status()== WL_CONNECTED){
 
 DynamicJsonDocument doc(1024);
 
 doc["private_key"] = "c4bf7e8f6c8f873fd0fddb9943cfbb5a8f5b90c4c58bd478";
-doc["co2"] =  450;
+doc["co2"] =  random(410, 420);
 //JsonObject fields = doc.createNestedObject("fields");
 doc["tempC"]=20;
 doc["humidity"]=30;
@@ -435,7 +449,7 @@ HTTPClient http;
             // file found at server
             if(httpCode == HTTP_CODE_OK) {
                 String payload = http.getString();
-               Serial.print(payload);
+               Serial.println(payload);
 
             }
         } else {
