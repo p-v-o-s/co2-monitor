@@ -36,6 +36,15 @@
 #include <Bounce2.h> // https://github.com/thomasfredericks/Bounce2
 
 
+
+#include <Wire.h>
+#include <BMP388_DEV.h>                           // Include the BMP388_DEV.h library
+float bmp_temperature, bmp_pressure, bmp_altitude;            // Create the temperature, pressure and altitude variables
+BMP388_DEV bmp388; 
+#include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
+SCD30 airSensor;
+
+
 #define PARAM_FILE      "/param.json"
 #define AUX_MQTTSETTING "/mqtt_setting"
 #define AUX_MQTTSAVE    "/mqtt_save"
@@ -79,7 +88,7 @@ const long measureDelay = 300000;
 
 //char post_url [200];
 
-String post_url="http://data.pvos.org/co2/data/532e3af0ce24425e7036b154add57792ddcf800245680f35";
+String post_url="http://data.pvos.org/co2/data/09b3f0239025e03c386b3f3ccfeba5501f95b8eff0ec9358";
 
 #define MQTT_USER_ID  "anyone"
 
@@ -304,6 +313,7 @@ bool loadAux(const String auxName) {
 
 void setup() {
 
+
   button_A.attach( BUTTON_A_PIN, INPUT ); // USE EXTERNAL PULL-UP
   button_A.interval(5); 
   button_A.setPressedState(LOW);
@@ -329,6 +339,23 @@ u8x8.print("12345678");
   delay(1000);
   Serial.begin(115200);
   Serial.println();
+
+
+  Wire.begin();
+
+bmp388.begin();                                 // Default initialisation, place the BMP388 into SLEEP_MODE 
+  bmp388.setTimeStandby(TIME_STANDBY_1280MS);     // Set the standby time to 1.3 seconds
+  bmp388.startNormalConversion();                 // Start BMP388 continuous conversion in NORMAL_MODE  
+
+
+  if (airSensor.begin() == false)
+  {
+    Serial.println("Air sensor not detected. Please check wiring. Freezing...");
+    while (1)
+      ;
+  }
+
+  
   SPIFFS.begin();
 
   loadAux(AUX_MQTTSETTING);
@@ -398,33 +425,39 @@ void loop() {
 
   if ( (millis() - lastMeasureTime) > measureDelay) {
 
-/*
-AutoConnectAux* setting = portal.aux(AUX_MQTTSETTING);
-PageArgument  args;
-    AutoConnectAux& mqtt_setting = *setting;
-    loadParams(mqtt_setting, args);
+if (airSensor.dataAvailable())
+  {
 
- serverName = args.arg("mqttserver");
-  serverName.trim();
-  */
-  Serial.println();
-Serial.println(serverName);
+  
+    int co2 = airSensor.getCO2();
+    float temp = roundf(airSensor.getTemperature()* 100) / 100;
+    float humid = roundf(airSensor.getHumidity()* 100) / 100;
 
+    while (!bmp388.getMeasurements(bmp_temperature, bmp_pressure, bmp_altitude))    // Check if the measurement is complete
+  {
+    Serial.println("getting BMP388 measurements ..");
+    delay(500);
+  }
+
+float bmp_temp = roundf(bmp_temperature * 100) / 100;
+float bmp_press = roundf(bmp_pressure * 100) / 100;
+
+  
 
 if(WiFi.status()== WL_CONNECTED){
 
 DynamicJsonDocument doc(1024);
 
-doc["private_key"] = "c4bf7e8f6c8f873fd0fddb9943cfbb5a8f5b90c4c58bd478";
-doc["co2"] =  random(410, 420);
+doc["private_key"] = "df95b8ed1743cc2320a328792c1ca78c25dcf34238c37f42";
+doc["co2"] =  co2;
 //JsonObject fields = doc.createNestedObject("fields");
-doc["tempC"]=20;
-doc["humidity"]=30;
-doc["mic"]=30;
-doc["auxPressure"]=1000.;
-doc["auxTempC"]=20;
-doc["aux001"]=10.;
-doc["aux002"]=20.;
+doc["tempC"]=temp;
+doc["humidity"]=humid;
+doc["mic"]=0.;
+doc["auxPressure"]=bmp_press;
+doc["auxTempC"]=bmp_temp;
+doc["aux001"]=0.;
+doc["aux002"]=0.;
 
 String json;
 serializeJson(doc, json);
@@ -459,6 +492,7 @@ HTTPClient http;
 
         http.end();
 }
+  }
         lastMeasureTime = millis(); //set the current time
 
   }
