@@ -384,10 +384,9 @@ float bmp_press = roundf(bmp_pressure * 100) / 100;
 
   
  u8x8.clear();
-u8x8.setFont(u8x8_font_7x14B_1x2_f);
+//u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setFont(u8x8_font_inr33_3x6_f);
 u8x8.setCursor(0,0); 
- u8x8.print("CO2: ");
-u8x8.setCursor(0,4);
 u8x8.print(co2);
 
 if(WiFi.status()== WL_CONNECTED){
