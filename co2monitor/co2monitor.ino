@@ -40,6 +40,8 @@ String bayou_feedkey = "175000f8eaac54d3361a3f56832074dd3fb5ac18fcfd5672";
 String bayou_writekey = "93c7fd0f9175c1a149414842f2af239eac38f32d171540f5";
 String post_url ="";
 
+int co2 = 410; // initial (dummy) value
+
 
 #include <Wire.h>
 #include <BMP388_DEV.h>                           // Include the BMP388_DEV.h library
@@ -348,12 +350,55 @@ u8x8.print(WiFi.localIP().toString());
 }
 
 
+int didJustPress=0;
 
 void loop() {
 
 
   portal.handleClient();
 
+   button_A.update();
+  button_B.update();
+ 
+ if ( button_A.pressed() ) {
+    
+    // TOGGLE THE LED STATE : 
+    ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+    //digitalWrite(LED_PIN,HIGH); // WRITE THE NEW ledState
+
+    //display config information:
+    
+ u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setCursor(0,0); 
+ u8x8.print("Network Config:");
+u8x8.setCursor(0,4);
+u8x8.print("AP: ");
+u8x8.print(WiFi.SSID());
+u8x8.setCursor(0,6);
+u8x8.print("ip: ");
+u8x8.print(WiFi.localIP().toString());
+    Serial.println("WiFi connected: " + WiFi.localIP().toString());  
+ didJustPress = 1;
+delay(3000);
+
+  }
+
+ if (didJustPress==1) {
+
+//reset 
+didJustPress = 0;
+
+//display usual info
+
+u8x8.clear();
+//u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setFont(u8x8_font_inr33_3x6_f);
+u8x8.setCursor(0,0); 
+u8x8.print(co2);
+
+ }
+  
   
   if (  ( (millis() - lastMeasureTime) > measureDelay) || firstLoop) {
 
@@ -369,7 +414,7 @@ if (airSensor.dataAvailable())
   {
 
   
-    int co2 = airSensor.getCO2();
+    co2 = airSensor.getCO2();
     float temp = roundf(airSensor.getTemperature()* 100) / 100;
     float humid = roundf(airSensor.getHumidity()* 100) / 100;
 
