@@ -12,12 +12,6 @@
     {
       "name": "parameters",
       "type": "ACText"
-    },
-    {
-      "name": "clear",
-      "type": "ACSubmit",
-      "value": "Clear channel",
-      "uri": "/mqtt_clear"
     }
   ]
 }

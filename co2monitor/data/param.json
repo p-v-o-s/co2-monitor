@@ -23,5 +23,11 @@
     "type": "ACInput",
     "value": "d9c2b6709c1faa92ab166f2352cab5947d13c0dc62019be9",
     "label": "API Key"
+  },
+  {
+    "name": "period",
+    "type": "ACInput",
+    "label": "Update period",
+    "value": "5  min."
   }
 ]

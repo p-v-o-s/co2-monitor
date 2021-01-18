@@ -50,12 +50,14 @@
       "type": "ACRadio",
       "label": "Update period",
       "value": [
-        "30 sec.",
-        "60 sec.",
-        "180 sec."
+        "1  min.",
+        "5  min.",
+        "15  min.",
+        "30  min.",
+        "60  min."
       ],
       "arrange": "vertical",
-      "checked": 1
+      "checked": 2
     },
     {
       "name": "newline",

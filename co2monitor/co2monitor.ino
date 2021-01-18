@@ -84,7 +84,9 @@ int ledState = LOW;
 
 long lastMeasureTime = 0;  // the last time the output pin was toggled
 
-const long measureDelay = 300000;
+long measureDelay = 300000;
+
+int firstLoop = 1;
 
 String getValue(String data, char separator, int index)
 {
@@ -109,6 +111,20 @@ String loadParams(AutoConnectAux& aux, PageArgument& args) {
   File param = SPIFFS.open(PARAM_FILE, "r");
   if (param) {
     aux.loadElement(param);
+    //aux.loadElement(param, { "mqttserver", "channelid", "userkey", "apikey"} );
+
+Serial.println("loaded new params ...");
+
+   bayou_base_url=aux["mqttserver"].value;
+   bayou_feedkey = aux["userkey"].value;
+   bayou_writekey = aux["apikey"].value;
+   //String upd = aux["period"].value;
+   //Serial.print("loaded upd: ");
+   //Serial.println(upd);
+   //measureDelay = upd.substring(0, 2).toInt() * 60000;
+   //Serial.print("measureDelay:");
+   //Serial.println(measureDelay);
+   
     param.close();
   }
   else
@@ -120,6 +136,7 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
   serverName = args.arg("mqttserver");
   serverName.trim();
   Serial.println(serverName);
+  bayou_base_url = serverName;
 
   channelId = args.arg("channelid");
   channelId.trim();
@@ -127,19 +144,26 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
   userKey = args.arg("userkey");
   userKey.trim();
   Serial.println(userKey);
+  bayou_feedkey = userKey;
   
   apiKey = args.arg("apikey");
   apiKey.trim();
   Serial.println(apiKey);
+  bayou_writekey = apiKey;
   
   String upd = args.arg("period");
-  updateInterval = upd.substring(0, 2).toInt() * 60000;
+  measureDelay = upd.substring(0, 2).toInt() * 60000;
+
+  Serial.println(measureDelay); 
   
   String uniqueid = args.arg("uniqueid");
 
   hostName = args.arg("hostname");
   hostName.trim();
-  
+
+  firstLoop = 1; //we should post immediately after saving new params
+
+
   // The entered value is owned by AutoConnectAux of /mqtt_setting.
   // To retrieve the elements of /mqtt_setting, it is necessary to get
   // the AutoConnectAux object of /mqtt_setting.
@@ -214,7 +238,6 @@ bool loadAux(const String auxName) {
     Serial.println("SPIFFS open failed: " + fn);
   return rc;
 }
-
 
 void setup() {
 
@@ -324,12 +347,20 @@ u8x8.print(WiFi.localIP().toString());
   webServer.on("/", handleRoot);
 }
 
-int firstLoop = 1;
+
 
 void loop() {
+
+
   portal.handleClient();
 
+  
   if (  ( (millis() - lastMeasureTime) > measureDelay) || firstLoop) {
+
+
+    //Serial.print("measureDelay=");
+    //Serial.println(measureDelay);
+    
   // no longer at first loop
   
   if (firstLoop) firstLoop = 0;
@@ -352,12 +383,19 @@ float bmp_temp = roundf(bmp_temperature * 100) / 100;
 float bmp_press = roundf(bmp_pressure * 100) / 100;
 
   
+ u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setCursor(0,0); 
+ u8x8.print("CO2: ");
+u8x8.setCursor(0,4);
+u8x8.print(co2);
 
 if(WiFi.status()== WL_CONNECTED){
 
 DynamicJsonDocument doc(1024);
 
-post_url="http://"+bayou_base_url+bayou_feedkey;
+
+post_url="http://"+bayou_base_url+"/"+bayou_feedkey;
 
 Serial.println(post_url);
 
