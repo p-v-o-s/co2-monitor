@@ -35,6 +35,10 @@
  #include <U8x8lib.h>
 #include <Bounce2.h> // https://github.com/thomasfredericks/Bounce2
 
+String bayou_base_url="data.pvos.org/co2/data/";
+String bayou_feedkey = "175000f8eaac54d3361a3f56832074dd3fb5ac18fcfd5672";
+String bayou_writekey = "93c7fd0f9175c1a149414842f2af239eac38f32d171540f5";
+String post_url ="";
 
 
 #include <Wire.h>
@@ -50,12 +54,7 @@ SCD30 airSensor;
 #define AUX_MQTTSAVE    "/mqtt_save"
 #define AUX_MQTTCLEAR   "/mqtt_clear"
 
-// Adjusting WebServer class with between ESP8266 and ESP32.
-#if defined(ARDUINO_ARCH_ESP8266)
-typedef ESP8266WebServer  WiFiWebServer;
-#elif defined(ARDUINO_ARCH_ESP32)
 typedef WebServer WiFiWebServer;
-#endif
 
 
 AutoConnect  portal;
@@ -87,12 +86,6 @@ long lastMeasureTime = 0;  // the last time the output pin was toggled
 
 const long measureDelay = 300000;
 
-//char post_url [200];
-
-String post_url="http://data.pvos.org/co2/data/09b3f0239025e03c386b3f3ccfeba5501f95b8eff0ec9358";
-
-#define MQTT_USER_ID  "anyone"
-
 String getValue(String data, char separator, int index)
 {
     int found = 0;
@@ -109,16 +102,6 @@ String getValue(String data, char separator, int index)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-int getStrength(uint8_t points) {
-  uint8_t sc = points;
-  long    rssi = 0;
-
-  while (sc--) {
-    rssi += WiFi.RSSI();
-    delay(20);
-  }
-  return points ? static_cast<int>(rssi / points) : 0;
-}
 
 String loadParams(AutoConnectAux& aux, PageArgument& args) {
   (void)(args);
@@ -227,7 +210,7 @@ bool loadAux(const String auxName) {
     rc = portal.load(fs);
     fs.close();
   }
-  elsee
+  else
     Serial.println("SPIFFS open failed: " + fn);
   return rc;
 }
@@ -339,15 +322,17 @@ u8x8.print(WiFi.localIP().toString());
 
   WiFiWebServer&  webServer = portal.host();
   webServer.on("/", handleRoot);
-  webServer.on(AUX_MQTTCLEAR, handleClearChannel);
 }
+
+int firstLoop = 1;
 
 void loop() {
   portal.handleClient();
 
-
-
-  if ( (millis() - lastMeasureTime) > measureDelay) {
+  if (  ( (millis() - lastMeasureTime) > measureDelay) || firstLoop) {
+  // no longer at first loop
+  
+  if (firstLoop) firstLoop = 0;
 
 if (airSensor.dataAvailable())
   {
@@ -372,7 +357,11 @@ if(WiFi.status()== WL_CONNECTED){
 
 DynamicJsonDocument doc(1024);
 
-doc["private_key"] = "df95b8ed1743cc2320a328792c1ca78c25dcf34238c37f42";
+post_url="http://"+bayou_base_url+bayou_feedkey;
+
+Serial.println(post_url);
+
+doc["private_key"] = bayou_writekey;
 doc["co2"] =  co2;
 //JsonObject fields = doc.createNestedObject("fields");
 doc["tempC"]=temp;

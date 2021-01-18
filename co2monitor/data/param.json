@@ -1,0 +1,27 @@
+[
+  {
+    "name": "mqttserver",
+    "type": "ACInput",
+    "value": "data.pvos.org/co2/data",
+    "placeholder": "MQTT broker server",
+    "label": "Data Server"
+  },
+  {
+    "name": "channelid",
+    "type": "ACInput",
+    "value": "454951",
+    "label": "Channel ID"
+  },
+  {
+    "name": "userkey",
+    "type": "ACInput",
+    "value": "cbb8d444591def61d4e59f9b53d3193dd7724a9d8599c6ee",
+    "label": "User Key"
+  },
+  {
+    "name": "apikey",
+    "type": "ACInput",
+    "value": "d9c2b6709c1faa92ab166f2352cab5947d13c0dc62019be9",
+    "label": "API Key"
+  }
+]

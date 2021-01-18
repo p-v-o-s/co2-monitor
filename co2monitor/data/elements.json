@@ -1,0 +1,49 @@
+[
+  {
+    "name": "text",
+    "type": "ACText",
+    "value": "AutoConnect element behaviors collection",
+    "style": "font-family:Arial;font-size:18px;font-weight:400;color:#191970",
+    "format": ""
+  },
+  {
+    "name": "check",
+    "type": "ACCheckBox",
+    "value": "check",
+    "label": "Check",
+    "checked": true,
+    "labelposition": "infront"
+  },
+  {
+    "name": "input",
+    "global": true,
+    "type": "ACInput",
+    "value": "pooo",
+    "label": "Text input",
+    "pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$",
+    "placeholder": "This area accepts hostname patterns"
+  },
+  {
+    "name": "radio",
+    "type": "ACRadio",
+    "label": "Radio buttons",
+    "value": [
+      "Button-1",
+      "Button-2",
+      "Button-3"
+    ],
+    "arrange": "vertical",
+    "checked": 1
+  },
+  {
+    "name": "select",
+    "type": "ACSelect",
+    "option": [
+      "Option-1",
+      "Option-2",
+      "Option-3"
+    ],
+    "label": "Select",
+    "selected": 2
+  }
+]
