@@ -1,0 +1,23 @@
+{
+  "title": "Bayou Settings",
+  "uri": "/bayou_save",
+  "menu": false,
+  "element": [
+    {
+      "name": "caption",
+      "type": "ACText",
+      "value": "<h4>Bayou settings saved as:</h4>",
+      "style": "text-align:center;color:#2f4f4f;padding:10px;"
+    },
+    {
+      "name": "parameters",
+      "type": "ACText"
+    },
+    {
+      "name": "clear",
+      "type": "ACSubmit",
+      "value": "Back to Home",
+      "uri": "/"
+    }
+  ]
+}

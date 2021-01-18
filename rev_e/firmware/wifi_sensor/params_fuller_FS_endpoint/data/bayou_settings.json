@@ -1,0 +1,84 @@
+{
+  "title": "Bayou Settings",
+  "uri": "/bayou_settings",
+  "menu": true,
+  "element": [
+    {
+      "name": "style",
+      "type": "ACStyle",
+      "value": "label+input,label+select{position:sticky;left:120px;width:230px!important;box-sizing:border-box;}"
+    },
+    {
+      "name": "header",
+      "type": "ACText",
+      "value": "<h2>Bayou data server settings</h2>",
+      "style": "text-align:center;color:#2f4f4f;"
+    },
+    {
+      "name": "caption",
+      "type": "ACText",
+      "value": "<h3>User guide: <a href=\"http://pvos.org/co2\">pvos.org/co2</a></h3>",
+      "style": "font-family:serif;color:#4682b4;"
+    },
+    {
+      "name": "mqttserver",
+      "type": "ACInput",
+      "value": "http://159.65.226.222:3000",
+      "label": "Bayou Server"
+    },
+    {
+      "name": "userkey",
+      "type": "ACInput",
+      "value": "f447b1c81ee96c7c0783fc4a7c1ac379cebe92bef8459803f89665f76b023465",
+      "label": "Bayou Key"
+    },
+    {
+      "name": "apikey",
+      "type": "ACInput",
+      "value": "957a98cdee39b0bf1d93c41640382a92e5c156ba545ac45c4ac0d1a1917c6b04",
+      "label": "API Key"
+    },
+    {
+      "name": "period",
+      "type": "ACRadio",
+      "label": "Update period",
+      "value": [
+        "1 min",
+        "5 min",
+        "10 min"
+      ],
+      "arrange": "vertical",
+      "checked": 1
+    },
+    {
+      "name": "newline",
+      "type": "ACElement",
+      "value": "<hr>"
+    },
+    {
+      "name": "uniqueid",
+      "type": "ACCheckbox",
+      "value": "unique",
+      "label": "Use APID unique",
+      "checked": false
+    },
+    {
+      "name": "hostname",
+      "type": "ACInput",
+      "label": "ESP host name",
+      "value": ""
+    },
+    {
+      "name": "save",
+      "type": "ACSubmit",
+      "value": "Save",
+      "uri": "/bayou_save"
+    },
+    {
+      "name": "discard",
+      "type": "ACSubmit",
+      "value": "Cancel",
+      "uri": "/"
+    }
+  ]
+}

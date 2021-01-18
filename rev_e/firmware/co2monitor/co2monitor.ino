@@ -57,7 +57,6 @@ typedef ESP8266WebServer  WiFiWebServer;
 typedef WebServer WiFiWebServer;
 #endif
 
-
 AutoConnect  portal;
 AutoConnectConfig config;
 WiFiClient   wifiClient;
@@ -426,8 +425,6 @@ u8x8.print(WiFi.localIP().toString());
 
 void loop() {
   portal.handleClient();
-
-
 
   if ( (millis() - lastMeasureTime) > measureDelay) {
 

@@ -1,0 +1,10 @@
+//const char *SSID = "InmanSquareOasis";
+//const char *WiFiPassword = "portauprince";
+//const char *SSID = "FiOS-0FV0C";
+//const char *WiFiPassword = "awry0746amy657hose";
+//const char *SSID = "Verizon-MiFi8800L-4AA2";
+//const char *WiFiPassword = "640b8aaf";
+const char *SSID = "Fios-7S5yS";
+const char *WiFiPassword = "whose44gel62has";
+const char* bayou_url = "http://159.65.226.222:3000/api/drives/f447b1c81ee96c7c0783fc4a7c1ac379cebe92bef8459803f89665f76b023465";
+const char* bayou_privkey = "957a98cdee39b0bf1d93c41640382a92e5c156ba545ac45c4ac0d1a1917c6b04";

@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name remote)(type KiCad)(uri /home/dwblair/gitwork/valedalama/greenhouse/remote/v5/remote)(options "")(descr "")(disabled))
+  (lib (name logo_footprints)(type KiCad)(uri ${KIPRJMOD}/logo_footprints)(options "")(descr ""))
+  (lib (name kicad)(type KiCad)(uri /home/dwblair/gitwork/pvos-logo/kicad.pretty)(options "")(descr ""))
+)
