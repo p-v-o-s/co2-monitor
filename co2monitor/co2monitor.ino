@@ -30,7 +30,7 @@
 #define GET_CHIPID()  ((uint16_t)(ESP.getEfuseMac()>>32))
 #endif
 #include <FS.h>
-#include <PubSubClient.h> // https://github.com/knolleary/pubsubclient
+//#include <PubSubClient.h> // https://github.com/knolleary/pubsubclient
 #include <AutoConnect.h>
  #include <U8x8lib.h>
 #include <Bounce2.h> // https://github.com/thomasfredericks/Bounce2
@@ -61,7 +61,7 @@ typedef WebServer WiFiWebServer;
 AutoConnect  portal;
 AutoConnectConfig config;
 WiFiClient   wifiClient;
-PubSubClient mqttClient(wifiClient);
+//PubSubClient mqttClient(wifiClient);
 String  serverName;
 String  channelId;
 String  userKey;
@@ -107,43 +107,6 @@ String getValue(String data, char separator, int index)
         }
     }
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
-bool mqttConnect() {
-  static const char alphanum[] = "0123456789"
-                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                 "abcdefghijklmnopqrstuvwxyz";  // For random generation of client ID.
-  char    clientId[9];
-
-  uint8_t retry = 3;
-  while (!mqttClient.connected()) {
-    if (serverName.length() <= 0)
-      break;
-
-    mqttClient.setServer(serverName.c_str(), 1883);
-    Serial.println(String("Attempting MQTT broker:") + serverName);
-
-    for (uint8_t i = 0; i < 8; i++) {
-      clientId[i] = alphanum[random(62)];
-    }
-    clientId[8] = '\0';
-
-    if (mqttClient.connect(clientId, MQTT_USER_ID, userKey.c_str())) {
-      Serial.println("Established:" + String(clientId));
-      return true;
-    } else {
-      Serial.println("Connection failed:" + String(mqttClient.state()));
-      if (!--retry)
-        break;
-      delay(3000);
-    }
-  }
-  return false;
-}
-
-void mqttPublish(String msg) {
-  String path = String("channels/") + channelId + String("/publish/") + apiKey;
-  mqttClient.publish(path.c_str(), msg.c_str());
 }
 
 int getStrength(uint8_t points) {
@@ -214,24 +177,6 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
   return String("");
 }
 
-/*
-void handleRoot() {
-  String  content =
-    "<html>"
-    "<head>"
-    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-    "</head>"
-    "<body>"
-    "<iframe width=\"450\" height=\"260\" style=\"transform:scale(0.79);-o-transform:scale(0.79);-webkit-transform:scale(0.79);-moz-transform:scale(0.79);-ms-transform:scale(0.79);transform-origin:0 0;-o-transform-origin:0 0;-webkit-transform-origin:0 0;-moz-transform-origin:0 0;-ms-transform-origin:0 0;border: 1px solid #cccccc;\" src=\"https://thingspeak.com/channels/454951/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&type=line\"></iframe>"
-    "<p style=\"padding-top:10px;text-align:center\">" AUTOCONNECT_LINK(COG_24) "</p>"
-    "</body>"
-    "</html>";
-
-  WiFiWebServer&  webServer = portal.host();
-  webServer.send(200, "text/html", content);
-}
-*/
-
 void handleRoot() {
   String  content = PSTR(
     "<style type=\"text/css\">"
@@ -272,33 +217,6 @@ void handleRoot() {
   webServer.send(200, "text/html", content);
 }
 
-// Clear channel using Thingspeak's API.
-void handleClearChannel() {
-  HTTPClient  httpClient;
-  WiFiClient  client;
-  String  endpoint = serverName;
-  endpoint.replace("mqtt", "api");
-  String  delUrl = "http://" + endpoint + "/channels/" + channelId + "/feeds.json?api_key=" + userKey;
-
-  Serial.print("DELETE " + delUrl);
-  if (httpClient.begin(client, delUrl)) {
-    Serial.print(":");
-    int resCode = httpClient.sendRequest("DELETE");
-    String  res = httpClient.getString();
-    httpClient.end();
-    Serial.println(String(resCode) + "," + res);
-  }
-  else
-    Serial.println(" failed");
-
-  // Returns the redirect response. The page is reloaded and its contents
-  // are updated to the state after deletion.
-  WiFiWebServer&  webServer = portal.host();
-  webServer.sendHeader("Location", String("http://") + webServer.client().localIP().toString() + String("/"));
-  webServer.send(302, "text/plain", "");
-  webServer.client().flush();
-  webServer.client().stop();
-}
 
 // Load AutoConnectAux JSON from SPIFFS.
 bool loadAux(const String auxName) {
@@ -309,7 +227,7 @@ bool loadAux(const String auxName) {
     rc = portal.load(fs);
     fs.close();
   }
-  else
+  elsee
     Serial.println("SPIFFS open failed: " + fn);
   return rc;
 }
