@@ -382,10 +382,10 @@ u8x8.setFont(u8x8_font_7x14B_1x2_f);
 u8x8.setCursor(0,0); 
  u8x8.print("Network Config:");
 u8x8.setCursor(0,4);
-u8x8.print("AP: ");
+//u8x8.print("AP: ");
 u8x8.print(WiFi.SSID());
 u8x8.setCursor(0,6);
-u8x8.print("ip: ");
+//u8x8.print("ip: ");
 u8x8.print(WiFi.localIP().toString());
     Serial.println("WiFi connected: " + WiFi.localIP().toString());  
  didJustPress = 1;
@@ -417,7 +417,8 @@ u8x8.print(co2);
     //display info:
     
 
-
+// set ourselves up to make an immediate measurement
+firstLoop = 1;
 
 long pressTime = millis();
 
@@ -450,8 +451,7 @@ while (((millis() - pressTime) < 5000) && (buttonB_state==0)) {
 //display usual info
 if (pressCount==0) {
 
-// set ourselves up to make an immediate measurement
-firstLoop = 1;
+
 
 // start reading every min and display and ask if it settles 
 
@@ -511,7 +511,7 @@ u8x8.setCursor(0,0);
  u8x8.print("calibration");
  u8x8.setCursor(0,4); 
  u8x8.print("canceled.");
- delay(1000);
+ delay(3000);
 }
 
 
