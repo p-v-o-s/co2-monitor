@@ -41,7 +41,7 @@ String bayou_writekey = "93c7fd0f9175c1a149414842f2af239eac38f32d171540f5";
 String post_url ="";
 
 int co2 = 410; // initial (dummy) value
-
+int forcePPM = 410; // force calibration value
 
 #include <Wire.h>
 #include <BMP388_DEV.h>                           // Include the BMP388_DEV.h library
@@ -389,16 +389,16 @@ u8x8.print("ip: ");
 u8x8.print(WiFi.localIP().toString());
     Serial.println("WiFi connected: " + WiFi.localIP().toString());  
  didJustPress = 1;
+
 delay(3000);
 
-  }
+// now display usual stuff
 
- if (didJustPress==1) {
-
-//reset 
 didJustPress = 0;
 
 //display usual info
+
+ledState = !ledState;
 
 u8x8.clear();
 //u8x8.setFont(u8x8_font_7x14B_1x2_f);
@@ -406,7 +406,118 @@ u8x8.setFont(u8x8_font_inr33_3x6_f);
 u8x8.setCursor(0,0); 
 u8x8.print(co2);
 
- }
+  }
+
+  if ( button_B.pressed() ) {
+    
+    // TOGGLE THE LED STATE : 
+    ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+    //digitalWrite(LED_PIN,HIGH); // WRITE THE NEW ledState
+
+    //display info:
+    
+
+
+
+long pressTime = millis();
+
+int pressCount = 5;
+
+u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setCursor(0,0); 
+ u8x8.print("Calibrating to");
+ u8x8.setCursor(0,2); 
+ u8x8.print(forcePPM);
+ u8x8.print(" ppm");
+
+ int buttonB_state = digitalRead(BUTTON_B_PIN);
+ 
+while (((millis() - pressTime) < 5000) && (buttonB_state==0)) {
+
+   buttonB_state = digitalRead(BUTTON_B_PIN);
+  u8x8.setCursor(0,4);
+  u8x8.print("in ");
+  u8x8.print(pressCount);
+  u8x8.print("...");
+  pressCount--;
+  delay(1000);
+}
+// now display usual stuff
+
+//didJustPress = 0;
+
+//display usual info
+if (pressCount==0) {
+
+// set ourselves up to make an immediate measurement
+firstLoop = 1;
+
+// start reading every min and display and ask if it settles 
+
+  u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+//u8x8.setFont(u8x8_font_inr33_3x6_f);
+u8x8.setCursor(0,0); 
+ u8x8.print("When CO2 settles,");
+ u8x8.setCursor(0,2); 
+ u8x8.print("release button");
+ u8x8.setCursor(0,4); 
+ u8x8.print("to calibrate.");
+ delay(2000);
+
+ buttonB_state = digitalRead(BUTTON_B_PIN);
+ 
+while ( buttonB_state==0) {
+
+buttonB_state = digitalRead(BUTTON_B_PIN);
+
+if (airSensor.dataAvailable()) {
+co2 = airSensor.getCO2();
+u8x8.clear();
+//u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setFont(u8x8_font_inr33_3x6_f);
+u8x8.setCursor(0,0); 
+u8x8.print(co2);
+
+}
+
+}
+
+
+
+airSensor.setForcedRecalibrationFactor(forcePPM);
+u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+//u8x8.setFont(u8x8_font_inr33_3x6_f);
+u8x8.setCursor(0,0); 
+u8x8.print("Calibrated to:");
+u8x8.setCursor(0,2); 
+u8x8.print(forcePPM);
+u8x8.print(" PPM!");
+delay(3000);
+
+}
+
+
+
+else {
+  u8x8.clear();
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+//u8x8.setFont(u8x8_font_inr33_3x6_f);
+u8x8.setCursor(0,0); 
+ u8x8.print("Force");
+ u8x8.setCursor(0,2); 
+ u8x8.print("calibration");
+ u8x8.setCursor(0,4); 
+ u8x8.print("canceled.");
+ delay(1000);
+}
+
+
+
+  }
+
   
   
   if (  ( (millis() - lastMeasureTime) > measureDelay) || firstLoop) {
