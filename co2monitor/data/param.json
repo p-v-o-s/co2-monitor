@@ -15,13 +15,13 @@
   {
     "name": "userkey",
     "type": "ACInput",
-    "value": "cbb8d444591def61d4e59f9b53d3193dd7724a9d8599c6ee",
+    "value": "3897755c6379d00bbb1d622827b1ffd1ba6a0579802044c9",
     "label": "User Key"
   },
   {
     "name": "apikey",
     "type": "ACInput",
-    "value": "d9c2b6709c1faa92ab166f2352cab5947d13c0dc62019be9",
+    "value": "13adcd2e8704165a62aea86bee0a3abe2fd3be4d62427a35",
     "label": "API Key"
   },
   {

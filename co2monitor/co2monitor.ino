@@ -69,6 +69,7 @@ String  userKey;
 String  apiKey;
 String  apid;
 String  hostName;
+String upd;
 unsigned int  updateInterval = 0;
 unsigned long lastPub = 0;
 
@@ -86,7 +87,7 @@ int ledState = LOW;
 
 long lastMeasureTime = 0;  // the last time the output pin was toggled
 
-long measureDelay = 300000;
+long measureDelay = 10000;
 
 int firstLoop = 1;
 
@@ -120,13 +121,13 @@ Serial.println("loaded new params ...");
    bayou_base_url=aux["mqttserver"].value;
    bayou_feedkey = aux["userkey"].value;
    bayou_writekey = aux["apikey"].value;
-   //String upd = aux["period"].value;
-   //Serial.print("loaded upd: ");
-   //Serial.println(upd);
-   //measureDelay = upd.substring(0, 2).toInt() * 60000;
-   //Serial.print("measureDelay:");
-   //Serial.println(measureDelay);
    
+   post_url="http://"+bayou_base_url+"/"+bayou_feedkey;
+   
+   upd = aux["period"].value;
+   Serial.println(upd);
+  measureDelay = upd.substring(0, 2).toInt() * 60000;
+  
     param.close();
   }
   else
@@ -153,7 +154,7 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
   Serial.println(apiKey);
   bayou_writekey = apiKey;
   
-  String upd = args.arg("period");
+  upd = args.arg("period");
   measureDelay = upd.substring(0, 2).toInt() * 60000;
 
   Serial.println(measureDelay); 
@@ -162,6 +163,10 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
 
   hostName = args.arg("hostname");
   hostName.trim();
+
+  
+  post_url="http://"+bayou_base_url+"/"+bayou_feedkey;
+
 
   firstLoop = 1; //we should post immediately after saving new params
 
@@ -285,7 +290,7 @@ bmp388.begin();                                 // Default initialisation, place
       ;
   }
 
-  
+  Serial.println(ESP.getFreeHeap(),DEC);
   SPIFFS.begin();
 
   loadAux(AUX_MQTTSETTING);
@@ -347,6 +352,10 @@ u8x8.print(WiFi.localIP().toString());
 
   WiFiWebServer&  webServer = portal.host();
   webServer.on("/", handleRoot);
+
+  // remove this once things are working
+  measureDelay = 300000;
+  
 }
 
 
@@ -402,18 +411,14 @@ u8x8.print(co2);
   
   if (  ( (millis() - lastMeasureTime) > measureDelay) || firstLoop) {
 
-
-    //Serial.print("measureDelay=");
-    //Serial.println(measureDelay);
-    
-  // no longer at first loop
+Serial.print("getFreeHeap(): ");
+Serial.println(ESP.getFreeHeap(),DEC);
   
   if (firstLoop) firstLoop = 0;
 
 if (airSensor.dataAvailable())
   {
 
-  
     co2 = airSensor.getCO2();
     float temp = roundf(airSensor.getTemperature()* 100) / 100;
     float humid = roundf(airSensor.getHumidity()* 100) / 100;
@@ -437,9 +442,6 @@ u8x8.print(co2);
 if(WiFi.status()== WL_CONNECTED){
 
 DynamicJsonDocument doc(1024);
-
-
-post_url="http://"+bayou_base_url+"/"+bayou_feedkey;
 
 Serial.println(post_url);
 
@@ -491,17 +493,4 @@ HTTPClient http;
         lastMeasureTime = millis(); //set the current time
 
   }
-  /*
-  if (updateInterval > 0) {
-    if (millis() - lastPub > updateInterval) {
-      if (!mqttClient.connected()) {
-        mqttConnect();
-      }
-      String item = String("field1=") + String(getStrength(7));
-      mqttPublish(item);
-      mqttClient.loop();
-      lastPub = millis();
-    }
-  }
-  */
 }
