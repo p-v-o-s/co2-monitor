@@ -1,4 +1,4 @@
-/*
+e/*
   ESP8266/ESP32 publish the RSSI as the WiFi signal strength to ThingSpeak channel.
   This example is for explaining how to use the AutoConnect library.
 
