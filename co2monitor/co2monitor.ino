@@ -40,6 +40,9 @@ String bayou_feedkey = "175000f8eaac54d3361a3f56832074dd3fb5ac18fcfd5672";
 String bayou_writekey = "93c7fd0f9175c1a149414842f2af239eac38f32d171540f5";
 String post_url ="";
 
+int NAcounts=0; // attempts at reconnecting ...
+int NAthreshold = 2; //how many failures to allow before resetting ...
+
 int co2 = 410; // initial (dummy) value
 int forcePPM = 410; // force calibration value
 
@@ -594,8 +597,14 @@ HTTPClient http;
 
             }
         } else {
-            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-           
+            Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+            NAcounts ++;
+
+            if(NAcounts > NAthreshold) {
+              NAcounts=0; // reset the counter
+              Serial.println("Failed to connect twice; resetting.");
+              ESP.restart();
+            }
         }
 
         http.end();
