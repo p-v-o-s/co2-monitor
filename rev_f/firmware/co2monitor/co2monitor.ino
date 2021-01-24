@@ -1,22 +1,12 @@
-/*
-  ESP8266/ESP32 publish the RSSI as the WiFi signal strength to ThingSpeak channel.
-  This example is for explaining how to use the AutoConnect library.
 
-  In order to execute this example, the ThingSpeak account is needed. Sing up
-  for New User Account and create a New Channel via My Channels.
-  For details, please refer to the project page.
-  https://hieromon.github.io/AutoConnect/howtoembed.html#used-with-mqtt-as-a-client-application
+// Install required libraries via the Arduino IDE by clicking on each of the links below:
 
-  Also, this example uses AutoConnectAux menu customization which stored in SPIFFS.
-  To evaluate this example, you upload the contents as mqtt_setting.json of
-  the data folder with MkSPIFFS Tool ("ESP8266 Sketch Data Upload" in Tools menu
-  in Arduino IDE).
+// Autoconnect: http://librarymanager/All#autoconnect
+// SCD30:  http://librarymanager/All#SparkFun_SCD30  
+// BMP388_DEV: http://librarymanager/All#bmp388_dev 
+// Bounce2: http://librarymanager/All#bounce2  (install the first library that comes up only)
+// U8g2: http://librarymanager/All#u8x8 
 
-  This example is based on the thinkspeak.com environment as of Dec. 20, 2018.
-  Copyright (c) 2018 Hieromon Ikasamo.
-  This software is released under the MIT License.
-  https://opensource.org/licenses/MIT
-*/
 
 #if defined(ARDUINO_ARCH_ESP8266)
 #include <ESP8266WiFi.h>
@@ -30,7 +20,6 @@
 #define GET_CHIPID()  ((uint16_t)(ESP.getEfuseMac()>>32))
 #endif
 #include <FS.h>
-//#include <PubSubClient.h> // https://github.com/knolleary/pubsubclient
 #include <AutoConnect.h>
  #include <U8x8lib.h>
 #include <Bounce2.h> // https://github.com/thomasfredericks/Bounce2
@@ -47,10 +36,10 @@ int co2 = 410; // initial (dummy) value
 int forcePPM = 410; // force calibration value
 
 #include <Wire.h>
-#include <BMP388_DEV.h>                           // Include the BMP388_DEV.h library
+//#include <BMP388_DEV.h>                           // https://github.com/MartinL1/BMP388_DEV 
 float bmp_temperature, bmp_pressure, bmp_altitude;            // Create the temperature, pressure and altitude variables
-BMP388_DEV bmp388; 
-#include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
+//BMP388_DEV bmp388; 
+#include "SparkFun_SCD30_Arduino_Library.h"  //  https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library
 SCD30 airSensor;
 
 
@@ -281,9 +270,9 @@ u8x8.print("12345678");
 
   Wire.begin();
 
-bmp388.begin();                                 // Default initialisation, place the BMP388 into SLEEP_MODE 
-  bmp388.setTimeStandby(TIME_STANDBY_1280MS);     // Set the standby time to 1.3 seconds
-  bmp388.startNormalConversion();                 // Start BMP388 continuous conversion in NORMAL_MODE  
+//bmp388.begin();                                 // Default initialisation, place the BMP388 into SLEEP_MODE 
+  //bmp388.setTimeStandby(TIME_STANDBY_1280MS);     // Set the standby time to 1.3 seconds
+  //bmp388.startNormalConversion();                 // Start BMP388 continuous conversion in NORMAL_MODE  
 
 
   if (airSensor.begin() == false)
@@ -408,6 +397,9 @@ u8x8.clear();
 u8x8.setFont(u8x8_font_inr33_3x6_f);
 u8x8.setCursor(0,0); 
 u8x8.print(co2);
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setCursor(0,6); 
+u8x8.print(WiFi.localIP().toString());
 
   }
 
@@ -537,6 +529,7 @@ if (airSensor.dataAvailable())
     float temp = roundf(airSensor.getTemperature()* 100) / 100;
     float humid = roundf(airSensor.getHumidity()* 100) / 100;
 
+/*
     while (!bmp388.getMeasurements(bmp_temperature, bmp_pressure, bmp_altitude))    // Check if the measurement is complete
   {
     Serial.println("getting BMP388 measurements ..");
@@ -545,13 +538,18 @@ if (airSensor.dataAvailable())
 
 float bmp_temp = roundf(bmp_temperature * 100) / 100;
 float bmp_press = roundf(bmp_pressure * 100) / 100;
-
+*/
+float bmp_press = 0.; // dummy values
+float bmp_temp = 0.; // dummy values
   
  u8x8.clear();
 //u8x8.setFont(u8x8_font_7x14B_1x2_f);
 u8x8.setFont(u8x8_font_inr33_3x6_f);
 u8x8.setCursor(0,0); 
 u8x8.print(co2);
+u8x8.setFont(u8x8_font_7x14B_1x2_f);
+u8x8.setCursor(0,6); 
+u8x8.print(WiFi.localIP().toString());
 
 if(WiFi.status()== WL_CONNECTED){
 
@@ -569,6 +567,9 @@ doc["auxPressure"]=bmp_press;
 doc["auxTempC"]=bmp_temp;
 doc["aux001"]=0.;
 doc["aux002"]=0.;
+doc["aux003"]=0.;
+doc["log"]=0.;
+
 
 String json;
 serializeJson(doc, json);
@@ -589,12 +590,16 @@ HTTPClient http;
             // HTTP header has been send and Server response header has been handled
             Serial.println(httpCode);
            
-          
+            u8x8.setFont(u8x8_font_7x14B_1x2_f);
+            u8x8.setCursor(60,0); 
+            u8x8.print(WiFi.localIP().toString());
+            
             // file found at server
             if(httpCode == HTTP_CODE_OK) {
                 String payload = http.getString();
                Serial.println(payload);
 
+      
             }
         } else {
             Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
