@@ -22,6 +22,9 @@ WiFiMulti wifiMulti;
 #include <Wire.h>
 
 
+#include <BMP388_DEV.h>                           // Include the BMP388_DEV.h library
+float bmp_temperature, bmp_pressure, bmp_altitude;            // Create the temperature, pressure and altitude variables
+BMP388_DEV bmp388; 
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
@@ -42,7 +45,7 @@ unsigned int sample;
 
 float mic_level;
 
-#define delayTime 10000
+#define delayTime 300000
 
 U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 
@@ -57,6 +60,10 @@ u8x8.setFont(u8x8_font_7x14B_1x2_f);
   u8x8.drawString(0, 0, "Gateway on!");
   
     Wire.begin();
+
+bmp388.begin();                                 // Default initialisation, place the BMP388 into SLEEP_MODE 
+  bmp388.setTimeStandby(TIME_STANDBY_1280MS);     // Set the standby time to 1.3 seconds
+  bmp388.startNormalConversion();                 // Start BMP388 continuous conversion in NORMAL_MODE  
 
 
   if (airSensor.begin() == false)
@@ -90,10 +97,23 @@ wifiMulti.addAP(SSID,WiFiPassword);
 void loop() {
 
 
+while (!bmp388.getMeasurements(bmp_temperature, bmp_pressure, bmp_altitude))    // Check if the measurement is complete
+  {
+    Serial.println("getting BMP388 measurements ..");
+    delay(500);
+  }
+
+float bmp_temp = roundf(bmp_temperature * 100) / 100;
+float bmp_press = roundf(bmp_pressure * 100) / 100;
+
   DynamicJsonDocument doc(1024);
 
 doc["deviceId"] =  sensorID;
 JsonObject fields = doc.createNestedObject("fields");
+fields["bmp_temp"]=bmp_temp;
+fields["bmp_press"]=bmp_press;
+
+
 
 if (airSensor.dataAvailable())
   {
@@ -177,6 +197,9 @@ u8x8.setCursor(0,4);
 u8x8.print("Humid: ");
 u8x8.print(humid);
 
+u8x8.setCursor(0,6);
+u8x8.print("Press: ");
+u8x8.print(bmp_press);
 
 
 
