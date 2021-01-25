@@ -1,5 +1,5 @@
 {
-  "title": "MQTT Setting",
+  "title": "Bayou-CO2 Settings",
   "uri": "/mqtt_setting",
   "menu": true,
   "element": [
@@ -11,39 +11,39 @@
     {
       "name": "header",
       "type": "ACText",
-      "value": "<h2>MQTT broker settings</h2>",
+      "value": "<h2>Bayou-CO2 Settings</h2>",
       "style": "text-align:center;color:#2f4f4f;"
     },
     {
       "name": "caption",
       "type": "ACText",
-      "value": "Publishing the WiFi signal strength to MQTT channel. RSSI value of ESP8266 to the channel created on ThingSpeak",
+      "value": "Match credentials below to the feed you created at data.pvos.org/co2/ <br>",
       "style": "font-family:serif;color:#4682b4;"
     },
     {
       "name": "mqttserver",
       "type": "ACInput",
       "value": "",
-      "placeholder": "MQTT broker server",
+      "placeholder": "Bayou-CO2 server",
       "label": "Server"
     },
     {
       "name": "channelid",
       "type": "ACInput",
       "value": "",
-      "label": "Channel ID"
+      "label": "Channel ID (N/A)"
     },
     {
       "name": "userkey",
       "type": "ACInput",
       "value": "NRTFYGJ6TJFGX4RC",
-      "label": "User Key"
+      "label": "Feed Public Key"
     },
     {
       "name": "apikey",
       "type": "ACInput",
       "value": "",
-      "label": "API Key"
+      "label": "Feed Private Key"
     },
     {
       "name": "period",
@@ -68,14 +68,14 @@
       "name": "uniqueid",
       "type": "ACCheckbox",
       "value": "unique",
-      "label": "Use APID unique",
+      "label": "Use unique APID",
       "checked": true
     },
     {
       "name": "hostname",
       "type": "ACInput",
       "label": "ESP host name",
-      "value": ""
+      "value": "pvos_CO2_AP"
     },
     {
       "name": "save",

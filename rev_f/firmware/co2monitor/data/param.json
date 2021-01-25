@@ -3,14 +3,14 @@
     "name": "mqttserver",
     "type": "ACInput",
     "value": "data.pvos.org/co2/data",
-    "placeholder": "MQTT broker server",
+    "placeholder": "data.pvos.org/co2/data",
     "label": "Data Server"
   },
   {
     "name": "channelid",
     "type": "ACInput",
     "value": "454951",
-    "label": "Channel ID"
+    "label": "Channel ID (N/A)"
   },
   {
     "name": "userkey",

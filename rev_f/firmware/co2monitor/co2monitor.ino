@@ -240,6 +240,11 @@ bool loadAux(const String auxName) {
 
 void setup() {
 
+Serial.print("apid:");
+Serial.println(apid);
+Serial.print("hostName:");
+Serial.println(hostName);
+
 
   button_A.attach( BUTTON_A_PIN, INPUT ); // USE EXTERNAL PULL-UP
   button_A.interval(5); 
@@ -256,14 +261,17 @@ void setup() {
   u8x8.setFont(u8x8_font_7x14B_1x2_f);
  u8x8.clear();
  u8x8.setCursor(0,0); 
- u8x8.print("Configuring...");
+ u8x8.print("Configure:");
  u8x8.setCursor(0,2); 
-u8x8.print("AP:esp32ap");
+u8x8.print("AP:");
+u8x8.print(apid.c_str());
+//u8x8.drawString(0,2, apid.c_str());
+ //u8x8.drawString(0, 2, "Hello friend");
  u8x8.setCursor(0,4); 
 u8x8.print("pw:");
 u8x8.print("12345678");
 
-  delay(1000);
+  delay(3000);
   Serial.begin(115200);
   Serial.println();
 
@@ -358,8 +366,10 @@ void loop() {
 
   portal.handleClient();
 
-   button_A.update();
+   //button_A.update();
   button_B.update();
+
+/*
  
  if ( button_A.pressed() ) {
     
@@ -402,6 +412,7 @@ u8x8.setCursor(0,6);
 u8x8.print(WiFi.localIP().toString());
 
   }
+  */
 
   if ( button_B.pressed() ) {
     
@@ -592,7 +603,7 @@ HTTPClient http;
            
             u8x8.setFont(u8x8_font_7x14B_1x2_f);
             u8x8.setCursor(60,0); 
-            u8x8.print(WiFi.localIP().toString());
+            u8x8.print(httpCode);
             
             // file found at server
             if(httpCode == HTTP_CODE_OK) {
