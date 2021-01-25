@@ -118,7 +118,7 @@ Serial.println("loaded new params ...");
    
    upd = aux["period"].value;
    Serial.println(upd);
-  measureDelay = upd.substring(0, 2).toInt() * 60000;
+   //measureDelay = upd.substring(0, 2).toInt() * 60000;
   
     param.close();
   }
@@ -147,7 +147,7 @@ String saveParams(AutoConnectAux& aux, PageArgument& args) {
   bayou_writekey = apiKey;
   
   upd = args.arg("period");
-  measureDelay = upd.substring(0, 2).toInt() * 60000;
+  //measureDelay = upd.substring(0, 2).toInt() * 60000;
 
   Serial.println(measureDelay); 
   

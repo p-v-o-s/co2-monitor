@@ -69,7 +69,7 @@
       "type": "ACCheckbox",
       "value": "unique",
       "label": "Use APID unique",
-      "checked": false
+      "checked": true
     },
     {
       "name": "hostname",
