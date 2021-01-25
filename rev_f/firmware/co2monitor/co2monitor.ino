@@ -240,12 +240,13 @@ bool loadAux(const String auxName) {
 
 void setup() {
 
-Serial.print("apid:");
-Serial.println(apid);
-Serial.print("hostName:");
-Serial.println(hostName);
 
+//delay(3000);
+  Serial.begin(115200);
+  Serial.println();
 
+  u8x8.begin();
+  
   button_A.attach( BUTTON_A_PIN, INPUT ); // USE EXTERNAL PULL-UP
   button_A.interval(5); 
   button_A.setPressedState(LOW);
@@ -257,24 +258,8 @@ Serial.println(hostName);
  pinMode(LED_PIN,OUTPUT);
  digitalWrite(LED_PIN,ledState);
 
- u8x8.begin();
-  u8x8.setFont(u8x8_font_7x14B_1x2_f);
- u8x8.clear();
- u8x8.setCursor(0,0); 
- u8x8.print("Configure:");
- u8x8.setCursor(0,2); 
-u8x8.print("AP:");
-u8x8.print(apid.c_str());
-//u8x8.drawString(0,2, apid.c_str());
- //u8x8.drawString(0, 2, "Hello friend");
- u8x8.setCursor(0,4); 
-u8x8.print("pw:");
-u8x8.print("12345678");
 
-  delay(3000);
-  Serial.begin(115200);
-  Serial.println();
-
+  
 
   Wire.begin();
 
@@ -320,11 +305,39 @@ u8x8.print("12345678");
 
     portal.on(AUX_MQTTSETTING, loadParams);
     portal.on(AUX_MQTTSAVE, saveParams);
-  }
-  else
-    Serial.println("aux. load error");
 
-  Serial.print("WiFi ");
+      Serial.print("apid:");
+  Serial.println(config.apid);
+  Serial.print("hostName:");
+  Serial.println(config.hostName);
+  
+
+ 
+    u8x8.setFont(u8x8_font_7x14B_1x2_f);
+   u8x8.clear();
+   u8x8.setCursor(0,0); 
+   u8x8.print("Configure:");
+   u8x8.setCursor(0,2); 
+  u8x8.print("AP:");
+  u8x8.print(config.apid.c_str());
+  //u8x8.drawString(0,2, apid.c_str());
+   //u8x8.drawString(0, 2, "Hello friend");
+   u8x8.setCursor(0,4); 
+  u8x8.print("pw:");
+  u8x8.print("12345678");
+  
+  }
+  else {
+    Serial.println("aux. load error");
+      u8x8.setFont(u8x8_font_7x14B_1x2_f);
+   u8x8.clear();
+   u8x8.setCursor(0,0); 
+   u8x8.print("aux. load error");
+  
+  }
+
+  Serial.println("WiFi ");
+
   if (portal.begin()) {
     config.bootUri = AC_ONBOOTURI_HOME;
 
